@@ -26,7 +26,7 @@ public class CrptApi {
                 0, timeUnit.toSeconds(1), TimeUnit.SECONDS);
     }
 
-    public void createDocument(String url, Document document) {
+    public void createDocument(String url, Document document, String signature) {
         try {
             if (!semaphore.tryAcquire()) {
                 System.err.println("Превышен лимит запросов");
@@ -34,10 +34,10 @@ public class CrptApi {
             }
             String requestBody = objectMapper.writeValueAsString(document);
 
-
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .header("Content-Type", "application/json")
+                    .header("Signature", signature)
                     .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                     .build();
 
@@ -96,6 +96,6 @@ public class CrptApi {
                 "type1", products,
                 "2022-24-05",
                 "true");
-        crptApi.createDocument("https://ismp.crpt.ru/api/v3/lk/documents/create", document);
+        crptApi.createDocument("https://ismp.crpt.ru/api/v3/lk/documents/create", document, "mockSignature");
     }
 }
